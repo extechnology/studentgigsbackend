@@ -20,8 +20,9 @@ class Employee(models.Model):
     available_work_hours = models.PositiveIntegerField(null=True, blank=True)
     available_working_periods_start_date = models.DateField(null=True, blank=True)
     available_working_periods_end_date = models.DateField(null=True, blank=True)
-    portfolio = models.URLField(null=True, blank=True)
+    portfolio = models.URLField(null=True, blank=True)   
     
+
     def __str__(self):
         return f'{self.name} - {self.email}'
 
@@ -33,7 +34,8 @@ class EmployeeLanguages(models.Model):
         ('Intermediate', 'Intermediate'),
         ('Advanced', 'Advanced'),
         ('Expert', 'Expert'),
-        ('Native', 'Native')    )
+        ('Native', 'Native')
+        )
     level = models.CharField(max_length=20, choices=LEVELS)
 
 class EmployeeTechnicalSkills(models.Model):
