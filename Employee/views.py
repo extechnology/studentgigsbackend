@@ -8,6 +8,26 @@ from rest_framework import status
 
 # Create your views here.
 
+class GoogleAuthView(APIView):
+    def post(self, request):
+        username = request.data.get('username')
+        email = request.data.get('email')
+
+        if not username or not email:
+            return Response({'error': 'Username and email are required'}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Get or create the user based on the provided email
+        user, created = User.objects.get_or_create(email=email, defaults={'username': username})
+
+        # If the user was just created, you can assign the username or handle further logic here
+        if created:
+            user.username = username
+            user.save()
+
+        # Generate or return the authentication token
+        auth_token, _ = Token.objects.get_or_create(user=user)
+
+        return Response({'token': auth_token.key}, status=status.HTTP_200_OK)
 
 
 class RegisterView(APIView):

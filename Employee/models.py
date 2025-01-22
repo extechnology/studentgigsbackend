@@ -21,6 +21,9 @@ class Employee(models.Model):
     available_working_periods_start_date = models.DateField(null=True, blank=True)
     available_working_periods_end_date = models.DateField(null=True, blank=True)
     portfolio = models.URLField(null=True, blank=True)
+    
+    def __str__(self):
+        return f'{self.name} - {self.email}'
 
 class EmployeeLanguages(models.Model):
     employee = models.ForeignKey(Employee, on_delete=models.CASCADE,related_name='languages',verbose_name='Employee')

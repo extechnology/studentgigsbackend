@@ -27,13 +27,13 @@ class OfflineTalentCategories(models.Model):
 
 
 class JobGeneralInfo(models.Model):
-    employer_name = models.CharField(max_length=255)
-    job_description = models.TextField()
-    logo = models.ImageField(upload_to='employer_logos/', null=True, blank=True)
+    company_name = models.CharField(max_length=255)
+    company_info = models.TextField()
+    logo = models.ImageField(upload_to='company_logos/', null=True, blank=True)
     email = models.EmailField()
     phone_number = models.CharField(max_length=20)
     employer_address = models.TextField()
 
     def __str__(self):
-        return self.employer_name
+        return self.company_name
 
