@@ -33,7 +33,6 @@ urlpatterns = [
     
     path('api/employer/', include('Employer.urls')),
     
-    path('',include(router.urls)),
     
 ]
 if settings.DEBUG:

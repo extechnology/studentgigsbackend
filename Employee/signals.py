@@ -6,4 +6,4 @@ from .models import Employee
 @receiver(post_save, sender=User)
 def create_employee_profile(sender, instance, created, **kwargs):
     if created:  # Only create an Employee profile for new User objects
-        Employee.objects.create(user=instance, email=instance.email)
+        Employee.objects.create(user=instance, email=instance.email, name=instance.username)

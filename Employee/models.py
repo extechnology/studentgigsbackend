@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 
+
 # Create your models here.
 
 class JobCategories(models.Model):
@@ -8,7 +9,7 @@ class JobCategories(models.Model):
 
 
 class Employee(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
     name = models.CharField(max_length=100)
     profile_photo = models.ImageField(upload_to='profile_photos/',null=True, blank=True)
     cover_photo = models.ImageField(upload_to='cover_photos/',null=True, blank=True)
@@ -16,6 +17,7 @@ class Employee(models.Model):
     email = models.EmailField(null=True, blank=True)
     phone = models.CharField(max_length=50,null=True, blank=True)
     address = models.TextField(null=True, blank=True)
+    country = models.CharField(max_length=100,null=True, blank=True)
     preferred_work_location = models.CharField(max_length=100,null=True, blank=True)
     available_work_hours = models.PositiveIntegerField(null=True, blank=True)
     available_working_periods_start_date = models.DateField(null=True, blank=True)
@@ -84,7 +86,7 @@ class EmployeeWorkPreferences(models.Model):
         ('Both', 'Both')
     )
     interested_job_type = models.CharField(max_length=20, choices=JOB_TYPES)
-    preferred_job_category = models.ForeignKey(JobCategories, on_delete=models.SET_NULL, null=True, blank=True)
+    # preferred_job_category = models.ForeignKey(JobCategories, on_delete=models.CASCADE, null=True, blank=True)
     expected_salary_range = models.CharField(max_length=100)
     AVAILABILITY_CHOICES = (
         ('Full Time', 'Full Time'),
@@ -100,6 +102,10 @@ class EmployeeWorkPreferences(models.Model):
         ('None', 'None')
     )
     transportation_availability = models.CharField(max_length=20, choices=TRANSPORT_CHOICES)
+
+class EmployeePreferredJobCategory(models.Model):
+    employee = models.ForeignKey(Employee, on_delete=models.CASCADE,related_name='preferred_job_categories',verbose_name=Employee)
+    preferred_job_category = models.CharField(max_length=200)
     
     
 class EmployeeExperience(models.Model):
