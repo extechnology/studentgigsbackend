@@ -78,18 +78,8 @@ class EmployeeAdditionalInformationSerializer(serializers.ModelSerializer):
 
 
 class EmployeeSerializer(serializers.ModelSerializer):
-    languages = EmployeeLanguagesSerializer(many=True)
-    technical_skills = EmployeeTechnicalSkillsSerializer(many=True)
-    soft_skills = EmployeeSoftSkillsSerializer(many=True)
-    educations= EmployeeEducationSerializer(many=True)
-    education_achievements = EmployeeEducationAchievementsSerializer(many=True)
-    certifications = EmployeeCertificationsSerializer(many=True)
-    work_preferences = EmployeeWorkPreferencesSerializer(many=True)
-    experiences = EmployeeExperienceSerializer(many=True)
-    additional_information = EmployeeAdditionalInformationSerializer(many=True)
-    preferred_job_categories = EmployeePreferredJobCategorySerializer(many=True)
-    online_talent_categories = serializers.SerializerMethodField()
-    offline_job_categories = serializers.SerializerMethodField()
+    # online_talent_categories = serializers.SerializerMethodField()
+    # offline_job_categories = serializers.SerializerMethodField()
     class Meta:
         model = Employee
         fields = '__all__'

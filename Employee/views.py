@@ -122,3 +122,18 @@ class EmployeeViewSet(viewsets.ModelViewSet):
     
     def get_queryset(self):
         return self.queryset.filter(user=self.request.user)
+    
+    def put(self, request, *args, **kwargs):
+        id = request.query_params.get('pk')
+        country = request.data.get('country')
+        print('---------------------------------\n')
+        print(country)
+        employee = Employee.objects.get(id=id)
+        serializer = EmployeeSerializer(employee, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    
+    

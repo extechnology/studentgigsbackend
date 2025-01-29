@@ -1,12 +1,10 @@
 from django.db import models
 from django.contrib.auth.models import User
 
-
 # Create your models here.
 
 class JobCategories(models.Model):
     name = models.CharField(max_length=100)
-
 
 class Employee(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -16,15 +14,18 @@ class Employee(models.Model):
     job_title = models.CharField(max_length=100,null=True, blank=True)
     email = models.EmailField(null=True, blank=True)
     phone = models.CharField(max_length=50,null=True, blank=True)
-    address = models.TextField(null=True, blank=True)
-    country = models.CharField(max_length=100,null=True, blank=True)
+    street_address = models.CharField(max_length=100,null=True, blank=True)
+    city = models.CharField(max_length=100,null=True, blank=True)
+    state = models.CharField(max_length=100,null=True, blank=True)
+    postal_code = models.CharField(max_length=10,null=True, blank=True)
+    country = models.JSONField(null=True, blank=True)
     preferred_work_location = models.CharField(max_length=100,null=True, blank=True)
     available_work_hours = models.PositiveIntegerField(null=True, blank=True)
     available_working_periods_start_date = models.DateField(null=True, blank=True)
     available_working_periods_end_date = models.DateField(null=True, blank=True)
     portfolio = models.URLField(null=True, blank=True)   
     
-
+    
     def __str__(self):
         return f'{self.name} - {self.email}'
 
@@ -38,25 +39,25 @@ class EmployeeLanguages(models.Model):
         ('Expert', 'Expert'),
         ('Native', 'Native')
         )
-    level = models.CharField(max_length=20, choices=LEVELS)
+    language_level = models.CharField(max_length=20, choices=LEVELS)
 
 class EmployeeTechnicalSkills(models.Model):
     employee = models.ForeignKey(Employee, on_delete=models.CASCADE,related_name='technical_skills',verbose_name='Employee')
-    skill = models.CharField(max_length=100)
+    technical_skill = models.CharField(max_length=100)
     LEVELS = (
         ('Beginner', 'Beginner'),
         ('Intermediate', 'Intermediate'),
         ('Advanced', 'Advanced'),
         ('Expert', 'Expert'),
     )
-    level = models.CharField(max_length=20, choices=LEVELS)
-    description = models.TextField(null=True, blank=True)
+    technical_level = models.CharField(max_length=20, choices=LEVELS)
+    technical_description = models.TextField(null=True, blank=True)
     
 
 class EmployeeSoftSkills(models.Model):
     employee = models.ForeignKey(Employee, on_delete=models.CASCADE,related_name='soft_skills',verbose_name='Employee')
-    skill = models.CharField(max_length=100)
-    description = models.TextField(null=True, blank=True)
+    soft_skill = models.CharField(max_length=100)
+    soft_description = models.TextField(null=True, blank=True)
 
 
 class EmployeeEducation(models.Model):
@@ -65,17 +66,18 @@ class EmployeeEducation(models.Model):
     field_of_study = models.CharField(max_length=100)
     name_of_institution = models.CharField(max_length=200)
     expected_graduation_year = models.CharField(max_length=50)
+    academic_level = models.CharField(max_length=100,null=True, blank=True)
     
 class EmployeeEducationAchievements(models.Model):
     employee = models.ForeignKey(Employee, on_delete=models.CASCADE,related_name='education_achievements',verbose_name=Employee)
-    name = models.CharField(max_length=200)
-    description = models.TextField(null=True, blank=True)
+    achievement_name = models.CharField(max_length=200)
+    achievement_description = models.TextField(null=True, blank=True)
     
 class EmployeeCertifications(models.Model):
     employee = models.ForeignKey(Employee, on_delete=models.CASCADE,related_name='certifications',verbose_name=Employee)
-    name = models.CharField(max_length=200)
-    description = models.TextField()
-    image = models.ImageField(upload_to='certifications/',null=True, blank=True)
+    certification_name = models.CharField(max_length=200)
+    certification_description = models.TextField()
+    certification_image = models.ImageField(upload_to='certifications/',null=True, blank=True)
     
 
 class EmployeeWorkPreferences(models.Model):
@@ -110,11 +112,11 @@ class EmployeePreferredJobCategory(models.Model):
     
 class EmployeeExperience(models.Model):
     employee = models.ForeignKey(Employee, on_delete=models.CASCADE,related_name='experiences',verbose_name=Employee)
-    company_name = models.CharField(max_length=100)
-    job_title = models.CharField(max_length=100)
-    start_date = models.DateField()
-    end_date = models.DateField(null=True, blank=True)
-    description = models.TextField(null=True, blank=True)
+    exp_company_name = models.CharField(max_length=100)
+    exp_job_title = models.CharField(max_length=100)
+    exp_start_date = models.DateField()
+    exp_end_date = models.DateField(null=True, blank=True)
+    exp_description = models.TextField(null=True, blank=True)
     
 class EmployeeAdditionalInformation(models.Model):
     employee = models.ForeignKey(Employee, on_delete=models.CASCADE,related_name='additional_information',verbose_name=Employee)
@@ -126,6 +128,3 @@ class EmployeeAdditionalInformation(models.Model):
     willing_to_relocate = models.CharField(max_length=20, choices=RELOCATE_CHOICES)
     reference_or_testimonials = models.TextField(null=True, blank=True)
     resume = models.FileField(upload_to='resumes/',null=True, blank=True)
-    
-    
-    
