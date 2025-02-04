@@ -65,7 +65,7 @@ class EmployeeEducationSerializer(serializers.ModelSerializer):
         field_of_studies_data = validated_data.pop('field_of_study')
         
         employee = Employee.objects.get(user=self.context['request'].user)
-        # print(employee,self.context['request'].user)
+        
         data = EmployeeEducation.objects.create(**validated_data, field_of_study=field_of_studies_data,employee=employee)
         if FieldOfStudy.objects.filter(name=field_of_studies_data).exists():
             field_of_study_instance = FieldOfStudy.objects.get(name=field_of_studies_data)
@@ -101,6 +101,7 @@ class EmployeeWorkPreferencesSerializer(serializers.ModelSerializer):
     #     return EmployeeWorkPreferences.objects.create(**validated_data, employee=employee)
 
 class EmployeePreferredJobCategorySerializer(serializers.ModelSerializer):
+
     class Meta:
         model = EmployeePreferredJobCategory
         fields = '__all__'
@@ -108,6 +109,15 @@ class EmployeePreferredJobCategorySerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         employee = Employee.objects.get(user=self.context['request'].user)
         return EmployeePreferredJobCategory.objects.create(**validated_data, employee=employee)
+    
+    def get_job_category(self, obj):
+        job_categories = JobCategories.objects.all()
+        job_category_list = []
+        
+        for job_category in job_categories:
+            job_category_list.append({"value": job_category.name, "label": job_category.name})
+    
+        return job_category_list
 
 class EmployeeExperienceSerializer(serializers.ModelSerializer):
     class Meta:
@@ -118,6 +128,11 @@ class EmployeeAdditionalInformationSerializer(serializers.ModelSerializer):
     class Meta:
         model = EmployeeAdditionalInformation
         fields = '__all__'   
+
+class EmployeeProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Employee
+        fields = '__all__'
 
 
 class EmployeeSerializer(serializers.ModelSerializer):

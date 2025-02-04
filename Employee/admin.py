@@ -55,3 +55,5 @@ admin.site.register(Employee, EmployeeAdmin)
 
 admin.site.register(FieldOfStudy)
 admin.site.register(EmployeeWorkPreferences)
+admin.site.register(JobCategories)
+admin.site.register(EmployeeProfile)

@@ -7,6 +7,7 @@ from rest_framework import status
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.permissions import IsAuthenticated
 import json
+import requests
 
 class GoogleAuthView(APIView):
     def post(self, request):
@@ -276,7 +277,8 @@ class EmployeeSoftSkillsViewSet(viewsets.ModelViewSet):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)  
     
     def delete(self, request, *args, **kwargs):
-        employee_soft_skills = EmployeeSoftSkills.objects.get(id = request.query_params.get('pk'))
+        id =request.query_params.get('pk')
+        employee_soft_skills = EmployeeSoftSkills.objects.get(id = id)
         employee_soft_skills.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
     
@@ -298,18 +300,62 @@ class EmployeeWorkPreferencesViewSet(viewsets.ModelViewSet):
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
-    
-class EmployeePreferredJobCategoryAPIView(APIView):
+
+class EmployeeJobCategoriesApiView(APIView):    
     def get(self, request):
-        job_categories = JobCategory.objects.all()
-        job_category_list = []
+        job_categories = JobCategories.objects.all()
+        job_categories_list = []
         
         for job_category in job_categories:
-            job_category_list.append({"value": job_category.name, "label": job_category.name})
+            job_categories_list.append({"value": job_category.name, "label": job_category.name})
         
-        return Response(job_category_list)
+        return Response(job_categories_list)
     
-    def delete(self, request):
+    
+class EmployeePreferredJobCategoryViewSet(viewsets.ModelViewSet):
+    queryset = EmployeePreferredJobCategory.objects.all()
+    serializer_class = EmployeePreferredJobCategorySerializer
+    permission_classes = [IsAuthenticated]
+    
+    def get_queryset(self):
+        return self.queryset.filter(employee__user=self.request.user)
+    
+    def delete(self, request, *args, **kwargs):
         employee_preferred_job_category = EmployeePreferredJobCategory.objects.get(id = request.query_params.get('pk'))
         employee_preferred_job_category.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+    
+
+class UniversityApiView(APIView):
+    url = 'http://universities.hipolabs.com/search?name='
+    def get(self, request):
+        name = request.query_params.get('name')
+        if name is not None:
+            response = requests.get(self.url + name)
+        else:
+            response = requests.get(self.url)
+        universities = response.json()
+        return Response(universities)
+    
+
+class EmployeeProfileViewSet(viewsets.ModelViewSet):
+    queryset = EmployeeProfile.objects.all()
+    serializer_class = EmployeeProfileSerializer
+    permission_classes = [IsAuthenticated]
+    
+    def get_queryset(self):
+        return self.queryset.filter(employee__user=self.request.user)
+    
+    def put(self, request, *args, **kwargs):
+        employee = EmployeeProfile.objects.get(user=self.request.user)
+        serializer = EmployeeProfileSerializer(employee, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    def delete(self, request, *args, **kwargs):
+        employee_profile = EmployeeProfile.objects.get(id = request.query_params.get('pk'))
+        employee_profile.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
