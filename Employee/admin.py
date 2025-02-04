@@ -52,3 +52,6 @@ class EmployeeAdmin(admin.ModelAdmin):
         model = Employee
 
 admin.site.register(Employee, EmployeeAdmin)
+
+admin.site.register(FieldOfStudy)
+admin.site.register(EmployeeWorkPreferences)

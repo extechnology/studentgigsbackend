@@ -173,3 +173,5 @@ SIMPLE_JWT = {
 from . import jazzmin
 
 JAZZMIN_SETTINGS = jazzmin.JAZZMIN_SETTINGS
+
+APPEND_SLASH = False
