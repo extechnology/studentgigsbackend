@@ -8,6 +8,11 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.permissions import IsAuthenticated
 import json
 import requests
+from django.shortcuts import get_object_or_404
+from rest_framework.exceptions import NotFound
+from rest_framework.parsers import MultiPartParser, FormParser
+from requests.exceptions import RequestException
+
 
 class GoogleAuthView(APIView):
     def post(self, request):
@@ -339,23 +344,101 @@ class UniversityApiView(APIView):
     
 
 class EmployeeProfileViewSet(viewsets.ModelViewSet):
-    queryset = EmployeeProfile.objects.all()
     serializer_class = EmployeeProfileSerializer
+    permission_classes = [IsAuthenticated]
+    queryset = EmployeeProfile.objects.all()
+    # parser_classes = [MultiPartParser, FormParser]  
+
+    def get_queryset(self):       
+        return EmployeeProfile.objects.filter(employee__user=self.request.user)
+
+    def put(self, request, *args, **kwargs):
+        pk = request.query_params.get('pk')
+
+        if not pk:
+            return Response({"detail": "pk parameter is required"}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            profile = EmployeeProfile.objects.get(pk=pk)
+        except EmployeeProfile.DoesNotExist:
+            raise NotFound(detail="Profile not found")
+
+        existing_cover_photo = profile.cover_photo
+        existing_profile_pic = profile.profile_pic
+
+        data = request.data.copy()  
+
+        cover_photo_file = request.FILES.get('cover_photo')
+        profile_pic_file = request.FILES.get('profile_pic')
+
+        if not cover_photo_file:
+            data['cover_photo'] = existing_cover_photo 
+        if not profile_pic_file:
+            data['profile_pic'] = existing_profile_pic  
+
+        serializer = EmployeeProfileSerializer(profile, data=data, partial=True)
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+class EmployeeExperienceViewSet(viewsets.ModelViewSet):
+    queryset = EmployeeExperience.objects.all()
+    serializer_class = EmployeeExperienceSerializer
+    permission_classes = [IsAuthenticated]
+    
+    def get_queryset(self):
+        return self.queryset.filter(employee__user=self.request.user)
+    
+    def post(self, request, *args, **kwargs):
+        employee = Employee.objects.get(user=self.request.user)
+        serializer = EmployeeExperienceSerializer(data=request.data,employee=employee)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)    
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+        
+    def delete(self, request, *args, **kwargs):
+        id =request.query_params.get('pk')
+        employee_experience = EmployeeExperience.objects.get(id = id)
+        employee_experience.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+class JobAPiView(APIView):
+    url = 'https://remotive.io/api/remote-jobs'
+
+    def get(self, request):
+        description = request.query_params.get('description')
+        try:
+            if description:
+                response = requests.get(f"{self.url}/{description}", timeout=5)
+            else:
+                response = requests.get(self.url, timeout=5)
+            response.raise_for_status()  # Raise an error for 4xx/5xx status codes
+            jobs = response.json()
+            return Response(jobs, status=status.HTTP_200_OK)
+        except RequestException as e:
+            return Response({"error": "Failed to connect to the skills API", "details": str(e)}, status=status.HTTP_502_BAD_GATEWAY)
+
+
+class EmployeeAdditionalInformationViewSet(viewsets.ModelViewSet):
+    queryset = EmployeeAdditionalInformation.objects.all()
+    serializer_class = EmployeeAdditionalInformationSerializer
     permission_classes = [IsAuthenticated]
     
     def get_queryset(self):
         return self.queryset.filter(employee__user=self.request.user)
     
     def put(self, request, *args, **kwargs):
-        employee = EmployeeProfile.objects.get(user=self.request.user)
-        serializer = EmployeeProfileSerializer(employee, data=request.data, partial=True)
+        id = request.query_params.get('pk')
+        employee_additional_information = EmployeeAdditionalInformation.objects.get(id=id)
+        serializer = EmployeeAdditionalInformationSerializer(employee_additional_information, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
-    def delete(self, request, *args, **kwargs):
-        employee_profile = EmployeeProfile.objects.get(id = request.query_params.get('pk'))
-        employee_profile.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
-

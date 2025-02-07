@@ -1,10 +1,15 @@
 from django.db import models
 from django.contrib.auth.models import User
-from datetime import timedelta,datetime
+import datetime
+from django.db import models
+from django.utils.timezone import now
 # Create your models here.
 
 class JobCategories(models.Model):
     name = models.CharField(max_length=100)
+    
+    def __str__(self):
+        return f"{self.name}"
 
 class Employee(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -28,12 +33,13 @@ class Employee(models.Model):
         return f"{self.name}"
 
 class EmployeeProfile(models.Model):
-    employee = models.ForeignKey(Employee, on_delete=models.CASCADE,related_name='profile',verbose_name='Employee',blank=True)
-    cover_photo = models.ImageField(upload_to='cover_photos/',null=True, blank=True)
-    job_title = models.CharField(max_length=100,null=True, blank=True)
-    
+    employee = models.ForeignKey(Employee, on_delete=models.CASCADE, related_name='profile', verbose_name='Employee', blank=True)
+    cover_photo = models.ImageField(upload_to='cover_photos/', blank=True)
+    job_title = models.CharField(max_length=100, blank=True)
+    profile_pic = models.ImageField(upload_to='profile_pics/', blank=True)
+
     def __str__(self):
-        return f"{self.employee} - Profile"
+        return f"{self.employee.name} - Profile"
 
 
 class EmployeeLanguages(models.Model):
@@ -48,6 +54,9 @@ class EmployeeLanguages(models.Model):
         ('Native', 'Native')
         )
     language_level = models.CharField(max_length=100, choices=LEVELS)
+    
+    def __str__(self):
+        return f"{self.employee}'s Languages"
 
 class EmployeeTechnicalSkills(models.Model):
     employee = models.ForeignKey(Employee, on_delete=models.CASCADE,related_name='technical_skills',verbose_name='Employee',blank=True)
@@ -61,12 +70,16 @@ class EmployeeTechnicalSkills(models.Model):
     technical_level = models.CharField(max_length=20, choices=LEVELS)
     # technical_description = models.TextField(null=True, blank=True)
     
+    def __str__(self):
+        return f"{self.employee}'s Technical Skills"
 
 class EmployeeSoftSkills(models.Model):
     employee = models.ForeignKey(Employee, on_delete=models.CASCADE,related_name='soft_skills',verbose_name='Employee',blank=True)
     soft_skill = models.CharField(max_length=100)
     # soft_description = models.TextField(null=True, blank=True)
 
+    def __str__(self):
+        return f"{self.employee}'s Soft Skills"
 
 class FieldOfStudy(models.Model):
     name = models.CharField(max_length=500)
@@ -103,6 +116,7 @@ class EmployeeEducationAchievements(models.Model):
     employee = models.ForeignKey(Employee, on_delete=models.CASCADE,related_name='education_achievements',verbose_name=Employee)
     achievement_name = models.CharField(max_length=200)
     achievement_description = models.TextField(null=True, blank=True)
+    
     
 class EmployeeCertifications(models.Model):
     employee = models.ForeignKey(Employee, on_delete=models.CASCADE,related_name='certifications',verbose_name=Employee)
@@ -144,21 +158,34 @@ class EmployeePreferredJobCategory(models.Model):
     preferred_job_category = models.CharField(max_length=200)
     
     
+
+from django.core.exceptions import ValidationError
+
 class EmployeeExperience(models.Model):
-    employee = models.ForeignKey(Employee, on_delete=models.CASCADE,related_name='experiences',verbose_name=Employee)
+    employee = models.ForeignKey(
+        'Employee', on_delete=models.CASCADE, related_name='experiences',
+        verbose_name='Employee', blank=True
+    )
     exp_company_name = models.CharField(max_length=100)
     exp_job_title = models.CharField(max_length=100)
-    exp_start_date = models.DateField()
-    exp_end_date = models.DateField(null=True, blank=True)
-    exp_description = models.TextField(null=True, blank=True)
+    exp_start_date = models.DateField(null=True, blank=True)  
+    exp_end_date = models.DateField(null=True, blank=True)  
+    exp_working = models.BooleanField(default=False)
+
+        
+
     
 class EmployeeAdditionalInformation(models.Model):
-    employee = models.ForeignKey(Employee, on_delete=models.CASCADE,related_name='additional_information',verbose_name=Employee)
+    employee = models.ForeignKey(Employee, on_delete=models.CASCADE,related_name='additional_information',verbose_name=Employee,blank=True)
     hobbies_or_interests = models.TextField(null=True, blank=True)
     RELOCATE_CHOICES = (
         ('Yes', 'Yes'),
         ('No', 'No')
     )
-    willing_to_relocate = models.CharField(max_length=20, choices=RELOCATE_CHOICES)
+    willing_to_relocate = models.CharField(max_length=20, choices=RELOCATE_CHOICES,blank=True)
     reference_or_testimonials = models.TextField(null=True, blank=True)
-    resume = models.FileField(upload_to='resumes/',null=True, blank=True)
+    resume = models.FileField(upload_to='resumes/',blank=True)
+    
+    def __str__(self):
+        return f"{self.employee}'s Additional Information"
+

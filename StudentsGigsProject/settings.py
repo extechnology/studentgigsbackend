@@ -60,7 +60,8 @@ MIDDLEWARE = [
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    # 'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'csp.middleware.CSPMiddleware',
 ]
 
 ROOT_URLCONF = 'StudentsGigsProject.urls'
@@ -175,3 +176,15 @@ from . import jazzmin
 JAZZMIN_SETTINGS = jazzmin.JAZZMIN_SETTINGS
 
 APPEND_SLASH = False
+
+X_FRAME_OPTIONS = None
+
+
+CSP_FRAME_ANCESTORS = [
+    "'self'",
+    "http://127.0.0.1:8000/",
+    "http://localhost:8000/",
+    "https://server.studentsgigs.com/",
+    'http://localhost:5173/',
+    'https://studentsgigs.vercel.app/'
+]

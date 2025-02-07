@@ -18,3 +18,8 @@ def create_WorkPreferences(sender, instance, created, **kwargs):
 def create_EmployeeProfile(sender, instance, created, **kwargs):
     if created:  # Only create an Employee profile for new User objects
         EmployeeProfile.objects.create(employee=instance)
+        
+@receiver(post_save, sender=Employee)
+def create_EmployeeAdditionalInformation(sender, instance, created, **kwargs):
+    if created:  # Only create an Employee profile for new User objects    
+        EmployeeAdditionalInformation.objects.create(employee=instance)

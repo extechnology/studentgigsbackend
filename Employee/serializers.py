@@ -2,6 +2,8 @@ from rest_framework import serializers
 from .models import *
 from django.contrib.auth.models import User
 from Employer.models import OnlineTalentCategories,OfflineTalentCategories
+import requests
+from django.core.files.base import ContentFile
 
 class RegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
@@ -96,9 +98,6 @@ class EmployeeWorkPreferencesSerializer(serializers.ModelSerializer):
         model = EmployeeWorkPreferences
         fields = '__all__'
         
-    # def create(self, validated_data):
-    #     employee = Employee.objects.get(user=self.context['request'].user)
-    #     return EmployeeWorkPreferences.objects.create(**validated_data, employee=employee)
 
 class EmployeePreferredJobCategorySerializer(serializers.ModelSerializer):
 
@@ -123,21 +122,83 @@ class EmployeeExperienceSerializer(serializers.ModelSerializer):
     class Meta:
         model = EmployeeExperience
         fields = '__all__'
+        
+    def create(self, validated_data):
+        employee = Employee.objects.get(user=self.context['request'].user)
+        return EmployeeExperience.objects.create(**validated_data, employee=employee)
      
 class EmployeeAdditionalInformationSerializer(serializers.ModelSerializer): 
+    employee_resume = serializers.SerializerMethodField()
     class Meta:
         model = EmployeeAdditionalInformation
         fields = '__all__'   
 
+    def get_employee_resume(self, obj):
+        request = self.context.get('request', None)
+        if request is None:
+            return None  # Avoid KeyError
+
+        user = request.user
+        document = EmployeeAdditionalInformation.objects.filter(employee__user=user).first()
+
+        if not document:
+            return None  # Return None instead of an empty list for consistency
+
+        protocol = "https" if request.is_secure() else "http"
+        current_host = request.get_host()
+
+        def construct_url(field):
+            file_field = getattr(document, field, None)
+            return f"{protocol}://{current_host}{file_field.url}" if file_field else None
+
+        return construct_url("resume")
+
+
+    
+
 class EmployeeProfileSerializer(serializers.ModelSerializer):
+    employee_name = serializers.CharField(source='employee.name', read_only=True)  
+    profile_img = serializers.SerializerMethodField()
+    cover_img = serializers.SerializerMethodField()
+
     class Meta:
-        model = Employee
+        model = EmployeeProfile
         fields = '__all__'
+        
+    def get_profile_img(self, obj):
+        request = self.context.get('request', None)
+        if request is None:
+            return None  # Handle case where request is None
+
+        user = request.user
+        profile = EmployeeProfile.objects.filter(employee__user=user).first()
+        if profile.profile_pic:
+            return request.build_absolute_uri(profile.profile_pic.url)
+        return None
+    
+    def get_cover_img(self, obj):
+        request = self.context.get('request', None)
+        if request is None:
+            return None  # Handle case where request is None
+
+        user = request.user
+        profile = EmployeeProfile.objects.filter(employee__user=user).first()
+        if profile.cover_photo:
+            return request.build_absolute_uri(profile.cover_photo.url)
+    #     return None
 
 
 class EmployeeSerializer(serializers.ModelSerializer):
-    # online_talent_categories = serializers.SerializerMethodField()
-    # offline_job_categories = serializers.SerializerMethodField()
+    profile = EmployeeProfileSerializer()
+    languages = EmployeeLanguagesSerializer(many=True)
+    technical_skills = EmployeeTechnicalSkillsSerializer(many=True)
+    soft_skills = EmployeeSoftSkillsSerializer(many=True)
+    educations =  EmployeeEducationSerializer(many=True)
+    certifications = EmployeeCertificationsSerializer(many=True)
+    work_preferences = EmployeeWorkPreferencesSerializer(many=True)
+    preferred_job_categories = EmployeePreferredJobCategorySerializer(many=True)
+    experiences = EmployeeExperienceSerializer(many=True)
+    additional_information = EmployeeAdditionalInformationSerializer()
     class Meta:
         model = Employee
         fields = '__all__'
