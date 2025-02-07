@@ -160,6 +160,7 @@ class EmployeeProfileSerializer(serializers.ModelSerializer):
     employee_name = serializers.CharField(source='employee.name', read_only=True)  
     profile_img = serializers.SerializerMethodField()
     cover_img = serializers.SerializerMethodField()
+    job_title = serializers.SerializerMethodField()
 
     class Meta:
         model = EmployeeProfile
@@ -186,6 +187,14 @@ class EmployeeProfileSerializer(serializers.ModelSerializer):
         if profile.cover_photo:
             return request.build_absolute_uri(profile.cover_photo.url)
     #     return None
+    def get_job_title(self, obj):
+        request = self.context.get('request', None)
+        if request is None:
+            return None  # Handle case where request is None
+
+        user = request.user
+        profile = Employee.objects.filter(user=user).first()
+        return profile.job_title
 
 
 class EmployeeSerializer(serializers.ModelSerializer):

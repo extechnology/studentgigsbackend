@@ -27,6 +27,8 @@ class Employee(models.Model):
     available_working_periods_start_date = models.DateField(null=True, blank=True)
     available_working_periods_end_date = models.DateField(null=True,blank=True)
     portfolio = models.URLField(null=True, blank=True)   
+    about = models.TextField(null=True, blank=True)
+    job_title = models.CharField(max_length=100, blank=True)
     
     
     def __str__(self):
@@ -35,7 +37,6 @@ class Employee(models.Model):
 class EmployeeProfile(models.Model):
     employee = models.ForeignKey(Employee, on_delete=models.CASCADE, related_name='profile', verbose_name='Employee', blank=True)
     cover_photo = models.ImageField(upload_to='cover_photos/', blank=True)
-    job_title = models.CharField(max_length=100, blank=True)
     profile_pic = models.ImageField(upload_to='profile_pics/', blank=True)
 
     def __str__(self):
