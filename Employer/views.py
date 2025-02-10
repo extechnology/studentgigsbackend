@@ -48,3 +48,6 @@ class EmployerViewSet(viewsets.ModelViewSet):
     queryset = CompanyInfo.objects.all()
     serializer_class = CompanyInfoSerializer
     permission_classes = [IsAuthenticated]
+    
+    def get_queryset(self):
+        return self.queryset.filter(user=self.request.user)

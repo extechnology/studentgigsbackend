@@ -29,7 +29,7 @@ class Employee(models.Model):
     portfolio = models.URLField(null=True, blank=True)   
     about = models.TextField(null=True, blank=True)
     job_title = models.CharField(max_length=100, blank=True)
-    gender = models.CharField(max_length=10, blank=True)
+    gender = models.CharField(max_length=10, blank=True,null=True)
     
     
     def __str__(self):
