@@ -34,6 +34,8 @@ urlpatterns = [
     path('api/google-auth/', GoogleAuthView.as_view(), name='google-auth'),
     
     path('',include(router.urls)),
+    
+    
 
 ]
 

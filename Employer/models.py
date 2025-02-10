@@ -27,12 +27,17 @@ class OfflineTalentCategories(models.Model):
 
 
 class CompanyInfo(models.Model):
-    company_name = models.CharField(max_length=255)
-    company_info = models.TextField()
+    company_name = models.CharField(max_length=255,null=True, blank=True)
+    company_info = models.TextField(null=True, blank=True)
     logo = models.ImageField(upload_to='company_logos/', null=True, blank=True)
-    email = models.EmailField()
-    phone_number = models.CharField(max_length=20)
+    email = models.EmailField(null=True, blank=True)
+    phone_number = models.CharField(max_length=20,null=True, blank=True)
     employer_address = models.TextField()
+    street_address = models.CharField(max_length=100,null=True, blank=True)
+    city = models.CharField(max_length=100,null=True, blank=True)
+    state = models.CharField(max_length=100,null=True, blank=True)
+    postal_code = models.CharField(max_length=10,null=True, blank=True)
+    country = models.JSONField(null=True, blank=True)
 
     def __str__(self):
         return self.company_name
