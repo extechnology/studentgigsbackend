@@ -6,11 +6,11 @@ JAZZMIN_SETTINGS = {
     "site_brand": "StudentGigs.com",
     
     
-    "site_logo": "./logos/icon.png",  # Path to your site logo
-    "login_logo": "./logos/logos1.png",  # Logo for the login page
-    "login_logo_dark": "./logos/logos1.png",  # Dark mode logo for the login page
-    "site_icon": './logos/icon.png',  # Favicon for your site
-    "user_avatar": './logos/icon.png',  # User avatar (can be a path to an image)
+    "site_logo": "./logos/icon-1.png",  # Path to your site logo
+    "login_logo": "./logos/logos2.png",  # Logo for the login page
+    "login_logo_dark": "./logos/logos2.png",  # Dark mode logo for the login page
+    "site_icon": './logos/icon-1.png',  # Favicon for your site
+    "user_avatar": './logos/icon-1.png',  # User avatar (can be a path to an image)
     
     "site_logo_classes": " shadow-none d-flex justify-content-center  ",  # Classes for the logo (e.g., background color)
     "login_logo_classes": "shadow-none w-100 ",  # Classes for the logo in the login page
