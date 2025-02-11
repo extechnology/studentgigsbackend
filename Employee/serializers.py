@@ -20,8 +20,20 @@ class RegisterSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         validated_data.pop('password_confirm')
-        user = User.objects.create_user(**validated_data)
+        email = validated_data['email']
+        
+        if User.objects.filter(email=email).exists():
+            # **Raise** the error instead of returning it
+            raise serializers.ValidationError({'email': 'Email already exists.'})
+        
+        user = User(
+            email=email,
+            username=validated_data['username'],
+        )
+        user.set_password(validated_data['password'])
+        user.save()
         return user
+
 
 
 class EmployeeLanguagesSerializer(serializers.ModelSerializer):

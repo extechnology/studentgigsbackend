@@ -188,3 +188,4 @@ CSP_FRAME_ANCESTORS = [
     'http://localhost:5173/',
     'https://studentsgigs.vercel.app/'
 ]
+

@@ -1,5 +1,5 @@
 from django.db import models
-
+from django.contrib.auth.models import User
 # Create your models here.
 
 
@@ -27,6 +27,7 @@ class OfflineTalentCategories(models.Model):
 
 
 class CompanyInfo(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
     company_name = models.CharField(max_length=255,null=True, blank=True)
     company_info = models.TextField(null=True, blank=True)
     logo = models.ImageField(upload_to='company_logos/', null=True, blank=True)
@@ -53,6 +54,9 @@ class OnlineJobInformation(models.Model):
     preferred_academic_courses = models.TextField()
     pay_structure = models.CharField(max_length=255)
     job_location = models.CharField(max_length=255)
+    
+    def __str__(self):
+        return self.job_title
 
 
 class OfflineJobInformation(models.Model):
@@ -67,3 +71,6 @@ class OfflineJobInformation(models.Model):
     pay_structure = models.CharField(max_length=255)
     job_location = models.CharField(max_length=255)
     job_location_map = models.URLField()
+    
+    def __str__(self):
+        return self.job_title

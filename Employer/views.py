@@ -27,7 +27,7 @@ class GoogleAuthView(APIView):
             return Response({'error': 'Username and email are required'}, status=status.HTTP_400_BAD_REQUEST)
 
         # Get or create the user based on the provided email
-        user, created = User.objects.get_or_create(email=email, defaults={'username': username}, is_staff=True)
+        user, created = User.objects.get_or_create(email=email, defaults={'username': username})
 
         # If the user was just created, you can assign the username or handle further logic here
         if created:
@@ -43,11 +43,3 @@ class GoogleAuthView(APIView):
         }, status=status.HTTP_200_OK)
         
 
-
-class EmployerViewSet(viewsets.ModelViewSet):
-    queryset = CompanyInfo.objects.all()
-    serializer_class = CompanyInfoSerializer
-    permission_classes = [IsAuthenticated]
-    
-    def get_queryset(self):
-        return self.queryset.filter(user=self.request.user)
