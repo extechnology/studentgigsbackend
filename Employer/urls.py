@@ -9,6 +9,9 @@ from rest_framework_simplejwt.views import (
 
 router = routers.DefaultRouter()
 
+router.register('online-job-info',OnlineJobInformationViewSet,basename='online-job-info')
+router.register('employer-info',EmployerInfoViewSet,basename='employer-info')
+
 
 urlpatterns = [
     
@@ -16,7 +19,7 @@ urlpatterns = [
     
     # Employer Register
     path('register/',EmployerRegisterView.as_view()),
-    
+    path('talent-categories/',TalentCategoriesApiView.as_view()),
     
     
     # JWT Authentication
@@ -25,6 +28,9 @@ urlpatterns = [
     
     # Google Authentication
     path('api/google-auth/', GoogleAuthView.as_view(), name='google-auth'),
+    
+    # rest password
+     path('auth/', include('dj_rest_auth.urls')),
     
    
 ]

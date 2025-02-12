@@ -43,3 +43,46 @@ class GoogleAuthView(APIView):
         }, status=status.HTTP_200_OK)
         
 
+
+
+class TalentCategoriesApiView(APIView):
+    def get(self, request):
+        categories = OnlineTalentCategories.objects.all()
+        serializer = OnlineTalentCategoriesSerializer(categories, many=True)
+        
+        offline_categories = OfflineTalentCategories.objects.all()
+        
+        offline_serializer = OfflineTalentCategoriesSerializer(offline_categories, many=True)
+        
+        online = []
+        offline = []
+        
+        for category in serializer.data:
+            online.append({
+                'name': category['category'],
+                'value': category['category']
+            })
+        
+        for category in offline_serializer.data:
+            offline.append({
+                'name': category['category'],
+                'value': category['category'],
+                'vehicle_option': category['vehicle_option']
+            })
+        
+        return Response(
+            {
+                'online': online,
+                'offline': offline
+            }
+        )
+
+class EmployerInfoViewSet(viewsets.ModelViewSet):
+    queryset = CompanyInfo.objects.all()
+    serializer_class = EmployerInfoSerializer
+    permission_classes = [IsAuthenticated]
+
+class OnlineJobInformationViewSet(viewsets.ModelViewSet):
+    queryset = OnlineJobInformation.objects.all()
+    serializer_class = OnlineJobInformationSerializer
+    permission_classes = [IsAuthenticated]

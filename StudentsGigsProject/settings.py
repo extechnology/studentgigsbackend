@@ -46,11 +46,20 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'corsheaders',
     
+    'django.contrib.sites', 
+    'dj_rest_auth',
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    
     # StudentsGigs Applications
     
     'Employee',
     'Employer',
 ]
+
+SITE_ID = 1
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -60,6 +69,7 @@ MIDDLEWARE = [
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
+    'allauth.account.middleware.AccountMiddleware',
     # 'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'csp.middleware.CSPMiddleware',
 ]
@@ -188,4 +198,13 @@ CSP_FRAME_ANCESTORS = [
     'http://localhost:5173/',
     'https://studentsgigs.vercel.app/'
 ]
+
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'  
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'vipinrajk026@gmail.com'
+EMAIL_HOST_PASSWORD = 'xzgm solp deql mpvl' 
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 

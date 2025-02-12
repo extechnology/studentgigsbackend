@@ -34,3 +34,22 @@ class EmployerRegisterSerializer(serializers.ModelSerializer):
         return user
 
 
+class OnlineTalentCategoriesSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = OnlineTalentCategories
+        fields = '__all__'
+
+class OfflineTalentCategoriesSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = OfflineTalentCategories
+        fields = '__all__'
+
+class OnlineJobInformationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = OnlineJobInformation
+        fields = '__all__'
+        
+class EmployerInfoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CompanyInfo
+        fields = '__all__'

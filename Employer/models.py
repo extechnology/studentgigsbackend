@@ -53,6 +53,7 @@ class OnlineJobInformation(models.Model):
     age_requirement_max = models.PositiveIntegerField()
     preferred_academic_courses = models.TextField()
     pay_structure = models.CharField(max_length=255)
+    salary_type = models.CharField(max_length=255,null=True, blank=True)
     job_location = models.CharField(max_length=255)
     
     def __str__(self):
