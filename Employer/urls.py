@@ -11,6 +11,8 @@ router = routers.DefaultRouter()
 
 router.register('online-job-info',OnlineJobInformationViewSet,basename='online-job-info')
 router.register('employer-info',EmployerInfoViewSet,basename='employer-info')
+router.register('offline-job-info',OfflineJobInformationViewSet,basename='offline-job-info')
+
 
 
 urlpatterns = [
@@ -20,6 +22,7 @@ urlpatterns = [
     # Employer Register
     path('register/',EmployerRegisterView.as_view()),
     path('talent-categories/',TalentCategoriesApiView.as_view()),
+    path('employer-jobs/',JobsApiView.as_view()),
     
     
     # JWT Authentication
@@ -32,6 +35,5 @@ urlpatterns = [
     # rest password
      path('auth/', include('dj_rest_auth.urls')),
     
-   
 ]
 

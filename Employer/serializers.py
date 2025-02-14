@@ -33,7 +33,6 @@ class EmployerRegisterSerializer(serializers.ModelSerializer):
         user.save()
         return user
 
-
 class OnlineTalentCategoriesSerializer(serializers.ModelSerializer):
     class Meta:
         model = OnlineTalentCategories
@@ -44,12 +43,33 @@ class OfflineTalentCategoriesSerializer(serializers.ModelSerializer):
         model = OfflineTalentCategories
         fields = '__all__'
 
+class EmployerInfoSerializer(serializers.ModelSerializer):
+    
+    class Meta:
+        model = CompanyInfo
+        fields = '__all__'
+
+
 class OnlineJobInformationSerializer(serializers.ModelSerializer):
+    company = EmployerInfoSerializer(read_only=True)
     class Meta:
         model = OnlineJobInformation
         fields = '__all__'
         
-class EmployerInfoSerializer(serializers.ModelSerializer):
+    def create(self, validated_data):
+        employer = CompanyInfo.objects.get(user=self.context['request'].user)
+        return OnlineJobInformation.objects.create(**validated_data, company=employer)
+
+
+    
+class OfflineJobInformationSerializer(serializers.ModelSerializer):
+    company = EmployerInfoSerializer(read_only=True)
     class Meta:
-        model = CompanyInfo
+        model = OfflineJobInformation
         fields = '__all__'
+        
+    def create(self, validated_data):
+        employer = CompanyInfo.objects.get(user=self.context['request'].user)
+        return OfflineJobInformation.objects.create(**validated_data, company=employer)
+        
+

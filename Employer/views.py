@@ -7,6 +7,7 @@ from rest_framework import status
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.permissions import IsAuthenticated
 from django.contrib.auth.models import User
+from itertools import chain
 
 class EmployerRegisterView(APIView):
     def post(self, request):
@@ -59,13 +60,13 @@ class TalentCategoriesApiView(APIView):
         
         for category in serializer.data:
             online.append({
-                'name': category['category'],
+                'label': category['category'],
                 'value': category['category']
             })
         
         for category in offline_serializer.data:
             offline.append({
-                'name': category['category'],
+                'label': category['category'],
                 'value': category['category'],
                 'vehicle_option': category['vehicle_option']
             })
@@ -82,7 +83,75 @@ class EmployerInfoViewSet(viewsets.ModelViewSet):
     serializer_class = EmployerInfoSerializer
     permission_classes = [IsAuthenticated]
 
+    def get_queryset(self):
+        return self.queryset.filter(user=self.request.user)  # ✅ Correct way to filter by user
+    
+    def list(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        employer_instance, created = CompanyInfo.objects.get_or_create(user=request.user)
+
+        # Check if the required fields have values
+        is_exist = bool(
+            employer_instance.company_name and employer_instance.phone_number and employer_instance.email
+            and employer_instance.street_address and employer_instance.city and employer_instance.state
+            and employer_instance.postal_code and employer_instance.country
+        )
+
+        data = {
+            'is_exist': is_exist,
+            'employer': self.serializer_class(employer_instance, context={'request': request}).data  # Added request context
+        }
+
+        return Response(data, status=status.HTTP_200_OK)
+
+    
+    def put(self, request, *args, **kwargs):
+        id = request.query_params.get('pk')
+        employer = CompanyInfo.objects.get(id=id)
+        serializer = EmployerInfoSerializer(employer, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
 class OnlineJobInformationViewSet(viewsets.ModelViewSet):
     queryset = OnlineJobInformation.objects.all()
     serializer_class = OnlineJobInformationSerializer
     permission_classes = [IsAuthenticated]
+
+
+class OfflineJobInformationViewSet(viewsets.ModelViewSet):
+    queryset = OfflineJobInformation.objects.all()
+    serializer_class = OfflineJobInformationSerializer
+    permission_classes = [IsAuthenticated]
+    
+
+class JobsApiView(APIView):
+    permission_classes = [IsAuthenticated]
+    # def get(self, request, *args, **kwargs):
+    #     online_jobs = OnlineJobInformation.objects.filter(company__user=request.user)
+    #     offline_jobs = OfflineJobInformation.objects.filter(company__user=request.user)
+    #     return Response({
+    #         'online_jobs': OnlineJobInformationSerializer(online_jobs, many=True).data,
+    #         'offline_jobs': OfflineJobInformationSerializer(offline_jobs, many=True).data
+    #     })
+    
+    def delete(self, request, *args, **kwargs):
+        id = request.query_params.get('pk')
+        job = OnlineJobInformation.objects.get(id=id)
+        job.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+    
+    
+    def get(self, request, *args, **kwargs):
+        online_jobs = OnlineJobInformation.objects.filter(company__user=request.user)
+        offline_jobs = OfflineJobInformation.objects.filter(company__user=request.user)
+    
+        # Serialize data
+        online_jobs_data = OnlineJobInformationSerializer(online_jobs, many=True).data
+        offline_jobs_data = OfflineJobInformationSerializer(offline_jobs, many=True).data
+    
+        # Merge both lists
+        all_jobs = list(chain(online_jobs_data, offline_jobs_data))
+    
+        return Response({"jobs": all_jobs})
