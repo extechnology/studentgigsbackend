@@ -1,6 +1,8 @@
 from rest_framework import serializers
 from .models import *
 from django.contrib.auth.models import User
+from django.conf import settings
+
 
 class EmployerRegisterSerializer(serializers.ModelSerializer):
     password_confirm = serializers.CharField(write_only=True)
@@ -44,6 +46,7 @@ class OfflineTalentCategoriesSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class EmployerInfoSerializer(serializers.ModelSerializer):
+
     
     class Meta:
         model = CompanyInfo
@@ -59,7 +62,7 @@ class OnlineJobInformationSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         employer = CompanyInfo.objects.get(user=self.context['request'].user)
         return OnlineJobInformation.objects.create(**validated_data, company=employer)
-
+    
 
     
 class OfflineJobInformationSerializer(serializers.ModelSerializer):
@@ -71,5 +74,6 @@ class OfflineJobInformationSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         employer = CompanyInfo.objects.get(user=self.context['request'].user)
         return OfflineJobInformation.objects.create(**validated_data, company=employer)
+    
         
 

@@ -15,6 +15,7 @@ router.register('offline-job-info',OfflineJobInformationViewSet,basename='offlin
 
 
 
+
 urlpatterns = [
     
     path('',include(router.urls)),

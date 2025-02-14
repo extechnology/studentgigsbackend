@@ -88,6 +88,7 @@ class EmployerInfoViewSet(viewsets.ModelViewSet):
     
     def list(self, request, *args, **kwargs):
         queryset = self.get_queryset()
+        serializer = self.serializer_class(queryset, many=True, context={'request': request})
         employer_instance, created = CompanyInfo.objects.get_or_create(user=request.user)
 
         # Check if the required fields have values
@@ -128,30 +129,21 @@ class OfflineJobInformationViewSet(viewsets.ModelViewSet):
 
 class JobsApiView(APIView):
     permission_classes = [IsAuthenticated]
-    # def get(self, request, *args, **kwargs):
-    #     online_jobs = OnlineJobInformation.objects.filter(company__user=request.user)
-    #     offline_jobs = OfflineJobInformation.objects.filter(company__user=request.user)
-    #     return Response({
-    #         'online_jobs': OnlineJobInformationSerializer(online_jobs, many=True).data,
-    #         'offline_jobs': OfflineJobInformationSerializer(offline_jobs, many=True).data
-    #     })
-    
-    def delete(self, request, *args, **kwargs):
-        id = request.query_params.get('pk')
-        job = OnlineJobInformation.objects.get(id=id)
-        job.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
-    
-    
     def get(self, request, *args, **kwargs):
-        online_jobs = OnlineJobInformation.objects.filter(company__user=request.user)
-        offline_jobs = OfflineJobInformation.objects.filter(company__user=request.user)
+        online_jobs_instance  = OnlineJobInformation.objects.filter(company__user=request.user)
+        offline_jobs_instance = OfflineJobInformation.objects.filter(company__user=request.user)
+        employer = CompanyInfo.objects.get(user=request.user)
+        employer_data = EmployerInfoSerializer(employer).data
+        
     
         # Serialize data
-        online_jobs_data = OnlineJobInformationSerializer(online_jobs, many=True).data
-        offline_jobs_data = OfflineJobInformationSerializer(offline_jobs, many=True).data
+        online_jobs_data = OnlineJobInformationSerializer(online_jobs_instance, many=True, context={'request': request}).data
+        offline_jobs_data = OfflineJobInformationSerializer(offline_jobs_instance, many=True, context={'request': request}).data
+
     
         # Merge both lists
         all_jobs = list(chain(online_jobs_data, offline_jobs_data))
     
-        return Response({"jobs": all_jobs})
+        return Response({
+            "jobs": all_jobs
+            })
