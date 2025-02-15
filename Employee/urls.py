@@ -27,6 +27,8 @@ urlpatterns = [
     path('employee-job-category/', EmployeeJobCategoriesApiView.as_view()),
     path('university/', UniversityApiView.as_view()),
     path('job-categories/', JobAPiView.as_view()),
+    path('home-slider-employee/', EmployeeSliderApiView.as_view()),
+    path('talents/',EmployeeJobsApiView.as_view()),
 
     
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),

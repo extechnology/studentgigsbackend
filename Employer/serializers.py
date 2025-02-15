@@ -77,3 +77,7 @@ class OfflineJobInformationSerializer(serializers.ModelSerializer):
     
         
 
+class EmployerSliderSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = EmployerSlider
+        fields = '__all__'

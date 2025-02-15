@@ -191,3 +191,13 @@ class EmployeeAdditionalInformation(models.Model):
     def __str__(self):
         return f"{self.employee}'s Additional Information"
 
+
+    
+class EmployeeSlider(models.Model):
+    image = models.ImageField(upload_to='slider_images/')
+    title = models.CharField(max_length=255)
+    description = models.TextField()
+    
+
+    def __str__(self):
+        return self.title

@@ -26,3 +26,5 @@ admin.site.register(EmployeeLanguages)
 admin.site.register(EmployeeTechnicalSkills)
 admin.site.register(EmployeePreferredJobCategory)
 admin.site.register(EmployeeExperience)
+
+admin.site.register(EmployeeSlider)

@@ -12,7 +12,9 @@ from django.shortcuts import get_object_or_404
 from rest_framework.exceptions import NotFound
 from rest_framework.parsers import MultiPartParser, FormParser
 from requests.exceptions import RequestException
-
+from Employer.models import OnlineJobInformation,OfflineJobInformation
+from Employer.serializers import OnlineJobInformationSerializer,OfflineJobInformationSerializer
+from itertools import chain
 
 class GoogleAuthView(APIView):
     def post(self, request):
@@ -442,3 +444,27 @@ class EmployeeAdditionalInformationViewSet(viewsets.ModelViewSet):
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class EmployeeSliderApiView(APIView):
+    def get(self, request):
+        sliders = EmployeeSlider.objects.all()
+        serializer = EmployeeSliderSerializer(sliders,context={'request': request}, many=True)
+        return Response(serializer.data)
+    
+class EmployeeJobsApiView(APIView):
+    def get(self, request):
+        online_jobs_instance  = OnlineJobInformation.objects.all()
+        offline_jobs_instance = OfflineJobInformation.objects.all()
+        
+        # Serialize data
+        online_jobs_data = OnlineJobInformationSerializer(online_jobs_instance, many=True, context={'request': request}).data
+        offline_jobs_data = OfflineJobInformationSerializer(offline_jobs_instance, many=True, context={'request': request}).data
+
+    
+        # Merge both lists
+        all_jobs = list(chain(online_jobs_data, offline_jobs_data))
+    
+        return Response({
+            "jobs": all_jobs
+            })

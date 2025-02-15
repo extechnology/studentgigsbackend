@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 # Create your models here.
-
+from Employee.models import Employee
 
 # Talent Categories
 
@@ -56,6 +56,7 @@ class OnlineJobInformation(models.Model):
     salary_type = models.CharField(max_length=255,null=True, blank=True)
     job_location = models.CharField(max_length=255,null=True, blank=True)
     posted_date = models.DateField(auto_now_add=True,null=True, blank=True)
+    job_type = models.CharField(max_length=255,default='online')
     
     def __str__(self):
         return f"{self.company.company_name} - {self.job_title}"
@@ -76,6 +77,30 @@ class OfflineJobInformation(models.Model):
     postal_code = models.CharField(max_length=10,null=True, blank=True)
     country = models.CharField(max_length=100,null=True, blank=True)
     posted_date = models.DateField(auto_now_add=True,null=True, blank=True)
+    job_type = models.CharField(max_length=255,default='offline')
+    
     
     def __str__(self):
         return self.job_title
+    
+
+class EmployerSlider(models.Model):
+    image = models.ImageField(upload_to='slider_images/')
+    title = models.CharField(max_length=255)
+    description = models.TextField()
+    
+
+    def __str__(self):
+        return self.title
+
+
+class EmployerJobApplication(models.Model):
+    employee = models.ForeignKey(Employee, on_delete=models.CASCADE,related_name='job_applications',verbose_name='Employee',blank=True)
+    online_job = models.ForeignKey(OnlineJobInformation, on_delete=models.CASCADE,related_name='job_applications',verbose_name='Online Job',blank=True)
+    offline_job = models.ForeignKey(OfflineJobInformation, on_delete=models.CASCADE,related_name='job_applications',verbose_name='Offline Job',blank=True)
+    date_applied = models.DateField(auto_now_add=True,null=True, blank=True)
+    resume = models.FileField(upload_to='job-application-resumes/',null=True, blank=True)
+    
+    def __str__(self):
+        return f"{self.employee.name} - {self.online_job.job_title}"
+    

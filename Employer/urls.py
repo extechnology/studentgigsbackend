@@ -24,6 +24,7 @@ urlpatterns = [
     path('register/',EmployerRegisterView.as_view()),
     path('talent-categories/',TalentCategoriesApiView.as_view()),
     path('employer-jobs/',JobsApiView.as_view()),
+    path('home-slider-employer/',EmployerSliderApiView.as_view()),
     
     
     # JWT Authentication

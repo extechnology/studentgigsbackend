@@ -147,3 +147,22 @@ class JobsApiView(APIView):
         return Response({
             "jobs": all_jobs
             })
+        
+    def delete(self, request, *args, **kwargs):
+        id = request.query_params.get('pk')
+        job_type = request.query_params.get('type')
+        if job_type == 'online':
+            job = OnlineJobInformation.objects.get(id=id)
+        elif job_type == 'offline':
+            job = OfflineJobInformation.objects.get(id=id)
+        else:
+            return Response({"error": "Invalid job type"}, status=status.HTTP_400_BAD_REQUEST)
+        
+        job.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+class EmployerSliderApiView(APIView):
+    def get(self, request):
+        sliders = EmployerSlider.objects.all()
+        serializer = EmployerSliderSerializer(sliders,context={'request': request}, many=True)
+        return Response(serializer.data)

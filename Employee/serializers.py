@@ -250,3 +250,7 @@ class EmployeeSerializer(serializers.ModelSerializer):
         return data
 
 
+class EmployeeSliderSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = EmployeeSlider
+        fields = '__all__'
