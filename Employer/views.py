@@ -166,3 +166,12 @@ class EmployerSliderApiView(APIView):
         sliders = EmployerSlider.objects.all()
         serializer = EmployerSliderSerializer(sliders,context={'request': request}, many=True)
         return Response(serializer.data)
+    
+
+class EmployerJobApplicationApiView(APIView):
+    permission_classes = [IsAuthenticated]
+    
+    def get(self, request, *args, **kwargs):
+        applications = EmployerJobApplication.objects.filter(employee__user = request.user)
+        serializer = EmployerJobApplicationSerializer(applications, many=True)
+        return Response(serializer.data)

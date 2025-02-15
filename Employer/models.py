@@ -55,7 +55,7 @@ class OnlineJobInformation(models.Model):
     pay_structure = models.CharField(max_length=255)
     salary_type = models.CharField(max_length=255,null=True, blank=True)
     job_location = models.CharField(max_length=255,null=True, blank=True)
-    posted_date = models.DateField(auto_now_add=True,null=True, blank=True)
+    posted_date = models.DateTimeField(auto_now_add=True,null=True, blank=True)
     job_type = models.CharField(max_length=255,default='online')
     
     def __str__(self):
@@ -76,7 +76,7 @@ class OfflineJobInformation(models.Model):
     state = models.CharField(max_length=100,null=True, blank=True)
     postal_code = models.CharField(max_length=10,null=True, blank=True)
     country = models.CharField(max_length=100,null=True, blank=True)
-    posted_date = models.DateField(auto_now_add=True,null=True, blank=True)
+    posted_date = models.DateTimeField(auto_now_add=True,null=True, blank=True)
     job_type = models.CharField(max_length=255,default='offline')
     
     

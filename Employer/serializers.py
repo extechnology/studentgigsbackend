@@ -81,3 +81,9 @@ class EmployerSliderSerializer(serializers.ModelSerializer):
     class Meta:
         model = EmployerSlider
         fields = '__all__'
+        
+
+class EmployerJobApplicationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = EmployerJobApplication
+        fields = '__all__'
